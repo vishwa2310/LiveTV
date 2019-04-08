@@ -73,7 +73,6 @@ public class Activity_Video extends AppCompatActivity {
             videoPlay();
         }
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
             @Override
             public void onCompletion(MediaPlayer mp) {
 
@@ -97,7 +96,20 @@ public class Activity_Video extends AppCompatActivity {
         unregisterReceiver(networkConnection);
         super.onPause();
     }
-
+private void dirClear(){
+    File dir = new File(Environment.getExternalStorageDirectory()+"addFront");
+    if (dir.isDirectory())
+    {
+        System.out.println("directory find "+dir);
+        String[] children = dir.list();
+        for (int i = 0; i < children.length; i++)
+        {
+            new File(dir, children[i]).delete();
+        }
+    }else{
+        System.out.println("directory not  find "+dir);
+    }
+}
     private void videoPlay() {
 
         if (arr_temp.size() > count) {
