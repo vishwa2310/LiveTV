@@ -52,12 +52,14 @@ public class Activity_Video extends AppCompatActivity {
             new Getclientmandate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             try {
+
                 for (int i = 0; i < files.length; i++) {
                     File new_path = new File(path + "/" + files[i].getName());
                     Uri uri_path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", new_path);
                     arr_temp.add(uri_path);
                     System.out.println(("Files FileName with full path no nw===" + uri_path));
                 }
+
             } catch (Exception e) {
                 Toast.makeText(context, "Video cant find", Toast.LENGTH_SHORT).show();
             }
@@ -67,9 +69,8 @@ public class Activity_Video extends AppCompatActivity {
             Uri vidurl = Uri.parse(String.valueOf(u));
             videoView.setVideoURI(vidurl);
             videoView.start();*/
+
             videoPlay();
-
-
         }
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
