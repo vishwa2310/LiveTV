@@ -129,7 +129,7 @@ public class Activity_Video extends AppCompatActivity {
 
     private class Getclientmandate extends AsyncTask<Void, Void, Void> {
 
-        ProgressDialog pDialog;
+      private   ProgressDialog pDialog;
         String jsonStr = "";
 
         String url_getclientmandate = "http://adfront.in/video_api.php";
@@ -219,6 +219,20 @@ public class Activity_Video extends AppCompatActivity {
         String ErrorTag = "";
         String fileUrl;
         String fileName;
+        private   ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            try {
+                pDialog = new ProgressDialog(Activity_Video.this);
+                pDialog.setMessage("Please wait...");
+                pDialog.setProgressStyle(R.style.AppCompatAlertDialogStyle);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            } catch (Exception e) {
+            }
+        }
 
         @Override
         protected Void doInBackground(String... strings) {
@@ -275,6 +289,10 @@ public class Activity_Video extends AppCompatActivity {
                 }
             }
             //super.onPostExecute(result);
+            try {
+                pDialog.dismiss();
+            } catch (Exception e) {
+            }
         }
     }
 }
