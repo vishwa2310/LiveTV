@@ -12,15 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
-
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class Activity_dashboard extends AppCompatActivity {
- private TextView textView;
- private int resquestPermissionCode=1;
- private Button button_next;
+    private TextView textView;
+    private int resquestPermissionCode = 1;
+    private Button button_next;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +30,17 @@ public class Activity_dashboard extends AppCompatActivity {
         } else {
             requestPermission();
         }
-        textView=findViewById(R.id.textView);
-        button_next=findViewById(R.id.button_next);
+        textView = findViewById(R.id.textView);
+        button_next = findViewById(R.id.button_next);
         button_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(Activity_dashboard.this,Activity_Video.class);
+                Intent i = new Intent(Activity_dashboard.this, Activity_Video.class);
                 startActivity(i);
             }
         });
         textView();
     }
-
 
 
     private void textView() {
@@ -63,9 +61,11 @@ public class Activity_dashboard extends AppCompatActivity {
                 "Version Code: " + Build.VERSION.RELEASE);
     }
 
+
     private void requestPermission() {
         ActivityCompat.requestPermissions(Activity_dashboard.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, resquestPermissionCode);
     }
+
 
     private boolean checkPermission() {
         int permission_write = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
@@ -73,4 +73,6 @@ public class Activity_dashboard extends AppCompatActivity {
         return permission_read == PackageManager.PERMISSION_GRANTED && permission_write == PackageManager.PERMISSION_GRANTED;
 
     }
+    
+
 }
