@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -24,7 +25,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 
@@ -108,7 +111,7 @@ public class Activity_Video extends AppCompatActivity {
     private void dirClear() {
         File dir = new File(Environment.getExternalStorageDirectory() + "/addFront");
         if (dir.isDirectory()) {
-            System.out.println("directory find " + dir);
+            System.out.println("directory find clear " + dir);
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
                 new File(dir, children[i]).delete();
@@ -123,24 +126,78 @@ public class Activity_Video extends AppCompatActivity {
         if (arr_temp.size() > count) {
             Uri uri = arr_temp.get(count);
             final Uri vidurl = Uri.parse(String.valueOf(uri));
+            if (String.valueOf(vidurl).contains("jpg")) {
+                videoView.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
 
-                videoView.setVideoURI(vidurl);
-                videoView.start();
+                //final Uri imageUri = data.getData();
+                final InputStream imageStream;
+                try {
+                    imageStream = getContentResolver().openInputStream(vidurl);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    imageView.setImageBitmap(selectedImage);
+                    System.out.println(("display image path=" + String.valueOf(vidurl)));
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            count++;
+                            videoPlay();
+                        }
+                    },3000);
 
-            System.out.println(("complete" + count));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }else{
+                imageView.setVisibility(View.GONE);
+                videoView.setVisibility(View.VISIBLE);
+            videoView.setVideoURI(vidurl);
+            videoView.start();}
+
+            System.out.println(("complete if loop" + count));
         } else {
             count = 0;
+            System.out.println(("zero count" + count));
             if (arr_temp.size() > count) {
                 Uri uri = arr_temp.get(count);
                 Uri vidurl = Uri.parse(String.valueOf(uri));
-                videoView.setVideoURI(vidurl);
-                videoView.start();
+                if (String.valueOf(vidurl).contains("jpg")) {
+                    videoView.setVisibility(View.GONE);
+                    imageView.setVisibility(View.VISIBLE);
+
+                    //final Uri imageUri = data.getData();
+                    final InputStream imageStream;
+                    try {
+                        imageStream = getContentResolver().openInputStream(vidurl);
+                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                        imageView.setImageBitmap(selectedImage);
+                        System.out.println(("display image path=" + String.valueOf(vidurl)));
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                count++;
+                                videoPlay();
+                            }
+                        },3000);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }else{
+                    imageView.setVisibility(View.GONE);
+                    videoView.setVisibility(View.VISIBLE);
+                    videoView.setVideoURI(vidurl);
+                    videoView.start();}
+//                videoView.setVideoURI(vidurl);
+//                videoView.start();
             }
-            System.out.println(("zero count" + count));
+
         }
         count++;
-        System.out.println(("end of loop" ));
-        videoPlay();
+        System.out.println(("end of loop"));
+        // videoPlay();
     }
 
     public static boolean isNetworkAvailable(Context context) {
@@ -212,11 +269,11 @@ public class Activity_Video extends AppCompatActivity {
 
                         JSONObject e = jsonObject.getJSONObject(i);
                         String id = e.getString("video");
-                        //if (!id.contains("")) {
+                        //if (!id.contains("jpg")) {
                         arr_video.add("http://" + id);
-                        //}
+                        // }
                     }
-                    System.out.println("array video==" + arr_video);
+                    System.out.println("json total file count(arry)=" + arr_video);
                     if (arr_video.size() > 0) {
                         arr_temp.clear();
                         for (int i = 0; i < arr_video.size(); i++) {
@@ -226,7 +283,7 @@ public class Activity_Video extends AppCompatActivity {
                                 String[] temdata = file_url.split("/");
                                 //new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
                                 new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
-                                System.out.println("loop==" + i);
+                                System.out.println("loop for file downloading ==" + i);
                             }
                         }
                     }
@@ -284,7 +341,7 @@ public class Activity_Video extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("url hit ==" + String.valueOf(fileUrl));
+            System.out.println("file downloading url ==" + String.valueOf(fileUrl));
             FileDownloader.downloadFile(fileUrl, pdfFile);
 
             return null;
@@ -301,7 +358,7 @@ public class Activity_Video extends AppCompatActivity {
                 //Uri path = Uri.fromFile(pdfFile);
                 Uri path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
                 arr_temp.add(path);
-                System.out.println("path array addintions==" + String.valueOf(arr_temp));
+                System.out.println("loop of files add in directory==" + String.valueOf(arr_temp));
                 newcount++;
                 System.out.println("new count==" + newcount + "arraysize=" + arr_video.size());
                 if (newcount == arr_video.size()) {

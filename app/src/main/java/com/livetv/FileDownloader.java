@@ -26,7 +26,7 @@ public class FileDownloader {
             FileOutputStream fileOutputStream = new FileOutputStream(directory);
             int totalSize = urlConnection.getContentLength();
 
-            System.out.println("SIZE==***"+totalSize);
+          //  System.out.println("SIZE==***"+totalSize);
 
             byte[] buffer = new byte[MEGABYTE];
             int bufferLength = 0;
