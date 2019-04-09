@@ -3,14 +3,19 @@ package com.livetv;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -31,6 +36,7 @@ public class Activity_Video extends AppCompatActivity {
     ArrayList<Uri> arr_temp = new ArrayList<Uri>();
     int count = 0, newcount = 0;
     private NetworkConnection networkConnection;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,7 @@ public class Activity_Video extends AppCompatActivity {
         networkConnection = new NetworkConnection();
         arr_temp.clear();
         videoView = findViewById(R.id.videoView);
+        imageView = findViewById(R.id.imageView);
 
         String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
         // System.out.println("Files Path==:" + path);
@@ -49,6 +56,7 @@ public class Activity_Video extends AppCompatActivity {
 
 
         if (isNetworkAvailable(Activity_Video.this)) {
+            dirClear();
             new Getclientmandate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             try {
@@ -96,27 +104,29 @@ public class Activity_Video extends AppCompatActivity {
         unregisterReceiver(networkConnection);
         super.onPause();
     }
-private void dirClear(){
-    File dir = new File(Environment.getExternalStorageDirectory()+"addFront");
-    if (dir.isDirectory())
-    {
-        System.out.println("directory find "+dir);
-        String[] children = dir.list();
-        for (int i = 0; i < children.length; i++)
-        {
-            new File(dir, children[i]).delete();
+
+    private void dirClear() {
+        File dir = new File(Environment.getExternalStorageDirectory() + "/addFront");
+        if (dir.isDirectory()) {
+            System.out.println("directory find " + dir);
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
+        } else {
+            System.out.println("directory not  find " + dir);
         }
-    }else{
-        System.out.println("directory not  find "+dir);
     }
-}
+
     private void videoPlay() {
 
         if (arr_temp.size() > count) {
             Uri uri = arr_temp.get(count);
-            Uri vidurl = Uri.parse(String.valueOf(uri));
-            videoView.setVideoURI(vidurl);
-            videoView.start();
+            final Uri vidurl = Uri.parse(String.valueOf(uri));
+
+                videoView.setVideoURI(vidurl);
+                videoView.start();
+
             System.out.println(("complete" + count));
         } else {
             count = 0;
@@ -142,7 +152,7 @@ private void dirClear(){
 
     private class Getclientmandate extends AsyncTask<Void, Void, Void> {
 
-      private   ProgressDialog pDialog;
+        private ProgressDialog pDialog;
         String jsonStr = "";
 
         String url_getclientmandate = "http://adfront.in/video_api.php";
@@ -200,9 +210,9 @@ private void dirClear(){
 
                         JSONObject e = jsonObject.getJSONObject(i);
                         String id = e.getString("video");
-                        if (!id.contains(".jpg")) {
-                            arr_video.add("http://" + id);
-                        }
+                        //if (!id.contains("")) {
+                        arr_video.add("http://" + id);
+                        //}
                     }
                     System.out.println("array video==" + arr_video);
                     if (arr_video.size() > 0) {
@@ -232,7 +242,7 @@ private void dirClear(){
         String ErrorTag = "";
         String fileUrl;
         String fileName;
-        private   ProgressDialog pDialog;
+        private ProgressDialog pDialog;
 
         @Override
         protected void onPreExecute() {
