@@ -139,6 +139,8 @@ public class Activity_Video extends AppCompatActivity {
             System.out.println(("zero count" + count));
         }
         count++;
+        System.out.println(("end of loop" ));
+        videoPlay();
     }
 
     public static boolean isNetworkAvailable(Context context) {
