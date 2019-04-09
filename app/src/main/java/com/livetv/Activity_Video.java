@@ -2,6 +2,7 @@ package com.livetv;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 
 public class Activity_Video extends AppCompatActivity {
@@ -82,6 +86,7 @@ public class Activity_Video extends AppCompatActivity {
             videoView.start();*/
 
             videoPlay();
+
         }
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -93,7 +98,29 @@ public class Activity_Video extends AppCompatActivity {
                 }
             }
         });
+new Handler().postDelayed(new Runnable() {
+    @Override
+    public void run() {
+        System.out.println("run thread");
+        // your code here...
+        if (isNetworkAvailable(Activity_Video.this)) {
+            Intent i = new Intent(context, Activity_Video.class);
+            finish();
 
+            startActivity(i);
+        }
+    }
+}, TimeUnit.MINUTES.toMillis(5));
+
+   /*     Timer timer = new Timer ();
+        TimerTask hourlyTask = new TimerTask () {
+            @Override
+            public void run () {
+
+            }
+        };
+// schedule the task to run starting now and then every 15minutes...
+        timer.schedule (hourlyTask, 0l, TimeUnit.MINUTES.toMillis(5));   // 1000*10*60 every 10 minut*/
     }
 
     @Override
@@ -126,7 +153,7 @@ public class Activity_Video extends AppCompatActivity {
         if (arr_temp.size() > count) {
             Uri uri = arr_temp.get(count);
             final Uri vidurl = Uri.parse(String.valueOf(uri));
-            if (String.valueOf(vidurl).contains("jpg")) {
+            if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg")||(String.valueOf(vidurl).toLowerCase()).contains(".jpeg")||(String.valueOf(vidurl).toLowerCase()).contains(".png")) {
                 videoView.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);
 
@@ -149,7 +176,7 @@ public class Activity_Video extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            }else{
+            }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")){
                 imageView.setVisibility(View.GONE);
                 videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(vidurl);
@@ -162,7 +189,7 @@ public class Activity_Video extends AppCompatActivity {
             if (arr_temp.size() > count) {
                 Uri uri = arr_temp.get(count);
                 Uri vidurl = Uri.parse(String.valueOf(uri));
-                if (String.valueOf(vidurl).contains("jpg")) {
+                if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg")||(String.valueOf(vidurl).toLowerCase()).contains(".jpeg")||(String.valueOf(vidurl).toLowerCase()).contains(".png")) {
                     videoView.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
 
@@ -185,7 +212,7 @@ public class Activity_Video extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                }else{
+                }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")){
                     imageView.setVisibility(View.GONE);
                     videoView.setVisibility(View.VISIBLE);
                     videoView.setVideoURI(vidurl);

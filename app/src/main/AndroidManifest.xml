@@ -24,6 +24,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <activity android:name=".Activity_dashboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +32,17 @@
             </intent-filter>
         </activity>
 
-<activity android:name=".Activity_Video"
-    android:screenOrientation="landscape"
-    android:theme="@style/Theme.Design.NoActionBar"/>
+        <activity
+            android:name=".Activity_Video"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.Design.NoActionBar" />
+
+        <receiver android:name="com.livetv.Myboot" android:enabled="true" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
