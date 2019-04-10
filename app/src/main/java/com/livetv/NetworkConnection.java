@@ -16,7 +16,7 @@ public class NetworkConnection extends BroadcastReceiver {
         if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 
             if (isConnected(context)){
-                Toast.makeText(context,"Network avilable", Toast.LENGTH_SHORT).show();;
+               // Toast.makeText(context,"Network avilable", Toast.LENGTH_SHORT).show();;
 
             }else{
                 Toast.makeText(context,"Network Not avilable", Toast.LENGTH_SHORT).show();;

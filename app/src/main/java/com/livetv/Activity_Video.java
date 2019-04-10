@@ -264,6 +264,95 @@ new Handler().postDelayed(new Runnable() {
         }
     }
 
+    private class GetdeviceID extends AsyncTask<Void, Void, Void> {
+
+        private ProgressDialog pDialog;
+        String jsonStr = "";
+
+        String url_getclientmandate = "http://adfront.in/video_api.php";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            try {
+                pDialog = new ProgressDialog(Activity_Video.this);
+                pDialog.setMessage("Please wait...");
+                pDialog.setProgressStyle(R.style.AppCompatAlertDialogStyle);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            } catch (Exception e) {
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            System.out.println("This is device id Url====" + url_getclientmandate);
+            HttpHandler sh = new HttpHandler();
+            // Making a request to url and getting response
+            jsonStr = sh.makeServiceCall(url_getclientmandate).toLowerCase();
+            System.out.println("This responce device id ====" + jsonStr);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            if (jsonStr.equals("vishwa")) {
+                Toast.makeText(Activity_Video.this, "please Check Internet Connection", Toast.LENGTH_SHORT).show();
+
+            } else {
+                convertJsonData_deviceID(jsonStr);
+            }
+            try {
+                pDialog.dismiss();
+            } catch (Exception e) {
+            }
+        }
+
+    }
+
+    public void convertJsonData_deviceID(String jsonStr) {
+        arr_video.clear();
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonObject = new JSONArray(jsonStr);
+                if (!jsonObject.toString().equals("[]")) {
+                    for (int i = 0; i < jsonObject.length(); i++) {
+
+                        JSONObject e = jsonObject.getJSONObject(i);
+                        String id = e.getString("video");
+                        //if (!id.contains("jpg")) {
+                        arr_video.add("http://" + id);
+                        // }
+                    }
+                    System.out.println("json total file count(arry)=" + arr_video);
+                    if (arr_video.size() > 0) {
+                        arr_temp.clear();
+                        for (int i = 0; i < arr_video.size(); i++) {
+                            file_url = arr_video.get(i);
+                            if (!file_url.equals("")) {
+
+                                String[] temdata = file_url.split("/");
+                                //new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
+                                new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
+                                System.out.println("loop for file downloading ==" + i);
+                            }
+                        }
+                    }
+                }
+            } catch (final JSONException e) {
+
+                System.out.println("Json parsing error: " + e.getMessage());
+                Toast.makeText(Activity_Video.this, "No Internet Connection ", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+    }
+
+
     private class Getclientmandate extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog pDialog;
