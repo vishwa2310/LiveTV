@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -34,8 +37,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 
 public class Activity_Video extends AppCompatActivity {
+    private int resquestPermissionCode = 1;
     private VideoView videoView;
     private Context context;
     ArrayList<String> arr_video = new ArrayList<String>();
@@ -50,6 +59,10 @@ public class Activity_Video extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         context = this;
+        if (checkPermission()) {
+        } else {
+            requestPermission();
+        }
         networkConnection = new NetworkConnection();
         arr_temp.clear();
         videoView = findViewById(R.id.videoView);
@@ -146,7 +159,19 @@ new Handler().postDelayed(new Runnable() {
             System.out.println("directory not  find " + dir);
         }
     }
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(Activity_Video.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE,ACCESS_COARSE_LOCATION,ACCESS_FINE_LOCATION}, resquestPermissionCode);
+    }
 
+
+    private boolean checkPermission() {
+        int permission_write = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int permission_read = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        int permission_coreloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
+        int permission_fineloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
+        return permission_read == PackageManager.PERMISSION_GRANTED && permission_write == PackageManager.PERMISSION_GRANTED&& permission_coreloc == PackageManager.PERMISSION_GRANTED&& permission_fineloc == PackageManager.PERMISSION_GRANTED;
+
+    }
     private void videoPlay() {
 
         if (arr_temp.size() > count) {
@@ -179,6 +204,7 @@ new Handler().postDelayed(new Runnable() {
                     (String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")){
                 imageView.setVisibility(View.GONE);
                 videoView.setVisibility(View.VISIBLE);
+                System.out.println(("display video path=" + String.valueOf(vidurl)));
             videoView.setVideoURI(vidurl);
             videoView.start();}
 
@@ -213,9 +239,10 @@ new Handler().postDelayed(new Runnable() {
                     }
 
                 }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")
-                        ||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")){
+                        ||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")||(String.valueOf(vidurl).toLowerCase()).contains(".mov")){
                     imageView.setVisibility(View.GONE);
                     videoView.setVisibility(View.VISIBLE);
+                    System.out.println(("display video path=" + String.valueOf(vidurl)));
                     videoView.setVideoURI(vidurl);
                     videoView.start();}
 //                videoView.setVideoURI(vidurl);
