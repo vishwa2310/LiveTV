@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import android.provider.Settings.Secure;
 import java.util.List;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -41,12 +41,17 @@ public class Activity_dashboard extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+/*
+        private String android_id = Secure.getString(getContext().getContentResolver(),
+                Secure.ANDROID_ID);*/
         textView();
     }
 
 
     private void textView() {
-        textView.setText("SERIAL: " + Build.SERIAL + "\n" +
+        textView.setText("android device id=" +Secure.getString(getApplicationContext().getContentResolver(),
+                Secure.ANDROID_ID)+"\n" +"SERIAL: " + Build.SERIAL + "\n" +
                 "MODEL: " + Build.MODEL + "\n" +
                 "ID: " + Build.ID + "\n" +
                 "Manufacture: " + Build.MANUFACTURER + "\n" +

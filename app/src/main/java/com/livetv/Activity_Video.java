@@ -106,11 +106,10 @@ new Handler().postDelayed(new Runnable() {
         if (isNetworkAvailable(Activity_Video.this)) {
             Intent i = new Intent(context, Activity_Video.class);
             finish();
-
             startActivity(i);
         }
     }
-}, TimeUnit.MINUTES.toMillis(5));
+}, TimeUnit.MINUTES.toMillis(15));
 
    /*     Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
@@ -176,7 +175,8 @@ new Handler().postDelayed(new Runnable() {
                     e.printStackTrace();
                 }
 
-            }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")){
+            }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")||
+                    (String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")){
                 imageView.setVisibility(View.GONE);
                 videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(vidurl);
@@ -212,7 +212,8 @@ new Handler().postDelayed(new Runnable() {
                         e.printStackTrace();
                     }
 
-                }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")){
+                }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")
+                        ||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")){
                     imageView.setVisibility(View.GONE);
                     videoView.setVisibility(View.VISIBLE);
                     videoView.setVideoURI(vidurl);
