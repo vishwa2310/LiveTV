@@ -111,7 +111,7 @@ public class Activity_dashboard extends AppCompatActivity implements LocationLis
 
     @Override
     public void onLocationChanged(Location location) {
-System.out.println("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+//System.out.println("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
         getAddress(19.109005, 72.874766);
     }
 
@@ -143,12 +143,12 @@ System.out.println("Latitude:" + location.getLatitude() + ", Longitude:" + locat
             add = add + "\n" + obj.getLocality();
             add = add + "\n" + obj.getSubThoroughfare();
 
-            Log.v("IGA", "Address" + add);
+           // Log.v("IGA", "Address" + add);
             // Toast.makeText(this, "Address=>" + add,
             // Toast.LENGTH_SHORT).show();
 
             // TennisAppActivity.showDialog(add);
-            System.out.println("address**:" + add );
+         //   System.out.println("address**:" + add );
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.livetv;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -67,12 +70,12 @@ public class Activity_Video extends AppCompatActivity {
         arr_temp.clear();
         videoView = findViewById(R.id.videoView);
         imageView = findViewById(R.id.imageView);
-
-        String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
-        // System.out.println("Files Path==:" + path);
-        File directory = new File(path);
-        File[] files = directory.listFiles();
-        //System.out.println("Files Size: " + files.length);
+try {
+    String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
+    // System.out.println("Files Path==:" + path);
+    File directory = new File(path);
+    File[] files = directory.listFiles();
+    //System.out.println("Files Size: " + files.length);
 
 
         if (isNetworkAvailable(Activity_Video.this)) {
@@ -101,6 +104,7 @@ public class Activity_Video extends AppCompatActivity {
             videoPlay();
 
         }
+
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -133,6 +137,7 @@ new Handler().postDelayed(new Runnable() {
         };
 // schedule the task to run starting now and then every 15minutes...
         timer.schedule (hourlyTask, 0l, TimeUnit.MINUTES.toMillis(5));   // 1000*10*60 every 10 minut*/
+}catch (Exception e){}
     }
 
     @Override
@@ -357,8 +362,9 @@ new Handler().postDelayed(new Runnable() {
 
         private ProgressDialog pDialog;
         String jsonStr = "";
-
-        String url_getclientmandate = "http://adfront.in/video_api.php";
+//decvice id
+      //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
+        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address="+ String.valueOf(Secure.getString(getApplicationContext().getContentResolver(),Secure.ANDROID_ID));
 
         @Override
         protected void onPreExecute() {
