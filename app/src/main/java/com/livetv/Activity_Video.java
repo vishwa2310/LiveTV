@@ -1,7 +1,6 @@
 package com.livetv;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,8 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -51,6 +48,8 @@ public class Activity_Video extends AppCompatActivity {
     private VideoView videoView;
     private Context context;
     ArrayList<String> arr_video = new ArrayList<String>();
+    ArrayList<String> arr_name = new ArrayList<String>();
+    ArrayList<Uri> arr_tempname = new ArrayList<Uri>();
     private String file_url = "";
     ArrayList<Uri> arr_temp = new ArrayList<Uri>();
     int count = 0, newcount = 0;
@@ -80,7 +79,7 @@ try {
 
         if (isNetworkAvailable(Activity_Video.this)) {
             dirClear();
-            new Getclientmandate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+           // new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             try {
 
@@ -115,18 +114,35 @@ try {
                 }
             }
         });
-new Handler().postDelayed(new Runnable() {
+/*new Handler().postDelayed(new Runnable() {
     @Override
     public void run() {
         System.out.println("run thread");
         // your code here...
         if (isNetworkAvailable(Activity_Video.this)) {
-            Intent i = new Intent(context, Activity_Video.class);
+         *//*   Intent i = new Intent(context, Activity_Video.class);
             finish();
-            startActivity(i);
+            startActivity(i);*//*
+            new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
-}, TimeUnit.MINUTES.toMillis(15));
+}, TimeUnit.MINUTES.toMillis(2));*/
+
+
+    Timer timer = new Timer ();
+    TimerTask hourlyTask = new TimerTask () {
+        @Override
+        public void run () {
+            System.out.println("run timer");
+            if (isNetworkAvailable(Activity_Video.this)) {
+
+                 new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }
+    };
+
+// schedule the task to run starting now and then every hour...
+    timer.schedule (hourlyTask, 0l, 1000*2*60);   // 1000*10*60 every 10 minut
 
    /*     Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
@@ -269,7 +285,7 @@ new Handler().postDelayed(new Runnable() {
         }
     }
 
-    private class GetdeviceID extends AsyncTask<Void, Void, Void> {
+   /* private class GetdeviceID extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog pDialog;
         String jsonStr = "";
@@ -321,6 +337,7 @@ new Handler().postDelayed(new Runnable() {
 
     public void convertJsonData_deviceID(String jsonStr) {
         arr_video.clear();
+
         if (jsonStr != null) {
             try {
                 JSONArray jsonObject = new JSONArray(jsonStr);
@@ -342,10 +359,13 @@ new Handler().postDelayed(new Runnable() {
 
                                 String[] temdata = file_url.split("/");
                                 //new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
+
+
                                 new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
                                 System.out.println("loop for file downloading ==" + i);
                             }
                         }
+
                     }
                 }
             } catch (final JSONException e) {
@@ -355,10 +375,10 @@ new Handler().postDelayed(new Runnable() {
 
             }
         }
-    }
+    }*/
 
 
-    private class Getclientmandate extends AsyncTask<Void, Void, Void> {
+    private class GetVidoList extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog pDialog;
         String jsonStr = "";
@@ -411,6 +431,7 @@ new Handler().postDelayed(new Runnable() {
 
     public void convertJsonData_clientmandate(String jsonStr) {
         arr_video.clear();
+
         if (jsonStr != null) {
             try {
                 JSONArray jsonObject = new JSONArray(jsonStr);
@@ -425,20 +446,28 @@ new Handler().postDelayed(new Runnable() {
                     }
                     System.out.println("json total file count(arry)=" + arr_video);
                     if (arr_video.size() > 0) {
-                        arr_temp.clear();
+
+                      // arr_temp.clear();
                         for (int i = 0; i < arr_video.size(); i++) {
                             file_url = arr_video.get(i);
                             if (!file_url.equals("")) {
 
                                 String[] temdata = file_url.split("/");
-                                //new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
+                                System.out.println("arry name **==" + arr_name);
+                           if (!arr_name.contains(temdata[temdata.length - 1])){
                                 new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
-                                System.out.println("loop for file downloading ==" + i);
+                                arr_name.add(temdata[temdata.length - 1]);
+                                System.out.println("loop for file downloading ==" + i);}
+                            else{
+                                System.out.println("*************no new video found**********");
                             }
                         }
+                        System.out.println("file names array==" + arr_name);
                     }
+                }else{
+                    Toast.makeText(Activity_Video.this, "No Video Found", Toast.LENGTH_SHORT).show();
                 }
-            } catch (final JSONException e) {
+            }} catch (final JSONException e) {
 
                 System.out.println("Json parsing error: " + e.getMessage());
                 Toast.makeText(Activity_Video.this, "No Internet Connection ", Toast.LENGTH_SHORT).show();

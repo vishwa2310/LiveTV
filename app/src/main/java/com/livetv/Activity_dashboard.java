@@ -27,10 +27,9 @@ import java.util.Locale;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static  android.Manifest.permission.ACCESS_FINE_LOCATION;
 
-public class Activity_dashboard extends AppCompatActivity implements LocationListener {
+
+public class Activity_dashboard extends AppCompatActivity  {
     private TextView textView;
     private int resquestPermissionCode = 1;
     private Button button_next;
@@ -66,8 +65,8 @@ public class Activity_dashboard extends AppCompatActivity implements LocationLis
 /*
         private String android_id = Secure.getString(getContext().getContentResolver(),
                 Secure.ANDROID_ID);*/
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+      //  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+      //  locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
       //  System.out.println("Latitude:" +  + ", Longitude:" + location.getLongitude());
        // getAddress(19.109005, 72.874766);
         textView();
@@ -75,6 +74,7 @@ public class Activity_dashboard extends AppCompatActivity implements LocationLis
 
 
     private void textView() {
+        try{
         textView.setText("android device id=" +Secure.getString(getApplicationContext().getContentResolver(),
                 Secure.ANDROID_ID)+"\n" +"SERIAL: " + Build.SERIAL + "\n" +
                 "MODEL: " + Build.MODEL + "\n" +
@@ -90,25 +90,27 @@ public class Activity_dashboard extends AppCompatActivity implements LocationLis
                 "BRAND: " + Build.BRAND + "\n" +
                 "HOST: " + Build.HOST + "\n" +
                 "FINGERPRINT: " + Build.FINGERPRINT + "\n" +
-                "Version Code: " + Build.VERSION.RELEASE);
+                "Version Code: " + Build.VERSION.RELEASE);}catch (Exception e){
+            Toast.makeText(context,"problem in device info",Toast.LENGTH_SHORT).show();;
+        }
     }
 
 
     private void requestPermission() {
-        ActivityCompat.requestPermissions(Activity_dashboard.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE,ACCESS_COARSE_LOCATION,ACCESS_FINE_LOCATION}, resquestPermissionCode);
+        ActivityCompat.requestPermissions(Activity_dashboard.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, resquestPermissionCode);
     }
 
 
     private boolean checkPermission() {
         int permission_write = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
         int permission_read = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
-        int permission_coreloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
-        int permission_fineloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
-        return permission_read == PackageManager.PERMISSION_GRANTED && permission_write == PackageManager.PERMISSION_GRANTED&& permission_coreloc == PackageManager.PERMISSION_GRANTED&& permission_fineloc == PackageManager.PERMISSION_GRANTED;
+       /* int permission_coreloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
+        int permission_fineloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);*/
+        return permission_read == PackageManager.PERMISSION_GRANTED && permission_write == PackageManager.PERMISSION_GRANTED;
 
     }
 
-
+/*
     @Override
     public void onLocationChanged(Location location) {
 //System.out.println("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
@@ -128,8 +130,8 @@ public class Activity_dashboard extends AppCompatActivity implements LocationLis
     @Override
     public void onProviderDisabled(String provider) {
 
-    }
-    public void getAddress(double lat, double lng) {
+    }*/
+  /*  public void getAddress(double lat, double lng) {
         Geocoder geocoder = new Geocoder(Activity_dashboard.this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
@@ -154,5 +156,5 @@ public class Activity_dashboard extends AppCompatActivity implements LocationLis
             e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 }
