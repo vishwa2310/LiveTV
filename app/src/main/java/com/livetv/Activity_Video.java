@@ -384,7 +384,7 @@ try {
         String jsonStr = "";
 //decvice id
       //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
-        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address="+ String.valueOf(Secure.getString(getApplicationContext().getContentResolver(),Secure.ANDROID_ID));
+        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address="+Secure.getString(getApplicationContext().getContentResolver(),Secure.ANDROID_ID);
 
         @Override
         protected void onPreExecute() {

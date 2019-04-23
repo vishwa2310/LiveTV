@@ -20,8 +20,9 @@ public class Myboot extends BroadcastReceiver {
                         break;
                 }
             }else{
-
+                System.out.println("no recive boot ");
             }
         }
 
 }
+
