@@ -2,7 +2,6 @@ package com.livetv;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings.Secure;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -35,7 +33,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -69,30 +66,30 @@ public class Activity_Video extends AppCompatActivity {
         arr_temp.clear();
         videoView = findViewById(R.id.videoView);
         imageView = findViewById(R.id.imageView);
-try {
-    String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
-    // System.out.println("Files Path==:" + path);
-    File directory = new File(path);
-    File[] files = directory.listFiles();
-    //System.out.println("Files Size: " + files.length);
+        try {
+            String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
+            // System.out.println("Files Path==:" + path);
+            File directory = new File(path);
+            File[] files = directory.listFiles();
+            //System.out.println("Files Size: " + files.length);
 
 
-        if (isNetworkAvailable(Activity_Video.this)) {
-            dirClear();
-           // new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            try {
+            if (isNetworkAvailable(Activity_Video.this)) {
+                dirClear();
+                // new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                try {
 
-                for (int i = 0; i < files.length; i++) {
-                    File new_path = new File(path + "/" + files[i].getName());
-                    Uri uri_path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", new_path);
-                    arr_temp.add(uri_path);
-                    System.out.println(("Files FileName with full path no nw===" + uri_path));
+                    for (int i = 0; i < files.length; i++) {
+                        File new_path = new File(path + "/" + files[i].getName());
+                        Uri uri_path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", new_path);
+                        arr_temp.add(uri_path);
+                        System.out.println(("Files FileName with full path no nw===" + uri_path));
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(context, "Video cant find", Toast.LENGTH_SHORT).show();
                 }
-
-            } catch (Exception e) {
-                Toast.makeText(context, "Video cant find", Toast.LENGTH_SHORT).show();
-            }
 
          /*   //System.out.println(("Files FileName:" + files[i].getName()));
             Uri u = arr_temp.get(0);
@@ -100,20 +97,20 @@ try {
             videoView.setVideoURI(vidurl);
             videoView.start();*/
 
-            videoPlay();
+                videoPlay();
 
-        }
-
-        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-
-                if (count != 0) {
-                    System.out.println(("under completion call"));
-                    videoPlay();
-                }
             }
-        });
+
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+
+                    if (count != 0) {
+                        System.out.println(("under completion call"));
+                        videoPlay();
+                    }
+                }
+            });
 /*new Handler().postDelayed(new Runnable() {
     @Override
     public void run() {
@@ -129,20 +126,20 @@ try {
 }, TimeUnit.MINUTES.toMillis(2));*/
 
 
-    Timer timer = new Timer ();
-    TimerTask hourlyTask = new TimerTask () {
-        @Override
-        public void run () {
-            System.out.println("run timer");
-            if (isNetworkAvailable(Activity_Video.this)) {
+            Timer timer = new Timer();
+            TimerTask hourlyTask = new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("run timer");
+                    if (isNetworkAvailable(Activity_Video.this)) {
 
-                 new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        }
-    };
+                        new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
+                }
+            };
 
 // schedule the task to run starting now and then every hour...
-    timer.schedule (hourlyTask, 0l, 1000*2*60);   // 1000*10*60 every 10 minut
+            timer.schedule(hourlyTask, 0l, 1000 * 4 * 60);   // 1000*10*60 every 10 minut
 
    /*     Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
@@ -153,7 +150,8 @@ try {
         };
 // schedule the task to run starting now and then every 15minutes...
         timer.schedule (hourlyTask, 0l, TimeUnit.MINUTES.toMillis(5));   // 1000*10*60 every 10 minut*/
-}catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -180,8 +178,9 @@ try {
             System.out.println("directory not  find " + dir);
         }
     }
+
     private void requestPermission() {
-        ActivityCompat.requestPermissions(Activity_Video.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE,ACCESS_COARSE_LOCATION,ACCESS_FINE_LOCATION}, resquestPermissionCode);
+        ActivityCompat.requestPermissions(Activity_Video.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, resquestPermissionCode);
     }
 
 
@@ -190,15 +189,16 @@ try {
         int permission_read = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
         int permission_coreloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
         int permission_fineloc = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
-        return permission_read == PackageManager.PERMISSION_GRANTED && permission_write == PackageManager.PERMISSION_GRANTED&& permission_coreloc == PackageManager.PERMISSION_GRANTED&& permission_fineloc == PackageManager.PERMISSION_GRANTED;
+        return permission_read == PackageManager.PERMISSION_GRANTED && permission_write == PackageManager.PERMISSION_GRANTED && permission_coreloc == PackageManager.PERMISSION_GRANTED && permission_fineloc == PackageManager.PERMISSION_GRANTED;
 
     }
+
     private void videoPlay() {
 
         if (arr_temp.size() > count) {
             Uri uri = arr_temp.get(count);
             final Uri vidurl = Uri.parse(String.valueOf(uri));
-            if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg")||(String.valueOf(vidurl).toLowerCase()).contains(".jpeg")||(String.valueOf(vidurl).toLowerCase()).contains(".png")) {
+            if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg") || (String.valueOf(vidurl).toLowerCase()).contains(".jpeg") || (String.valueOf(vidurl).toLowerCase()).contains(".png")) {
                 videoView.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);
 
@@ -215,19 +215,20 @@ try {
                             count++;
                             videoPlay();
                         }
-                    },3000);
+                    }, 3000);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
 
-            }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")||
-                    (String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")){
+            } else if ((String.valueOf(vidurl).toLowerCase()).contains(".mp4") || (String.valueOf(vidurl).toLowerCase()).contains(".3gp") || (String.valueOf(vidurl).toLowerCase()).contains(".avi") ||
+                    (String.valueOf(vidurl).toLowerCase()).contains(".webm") || (String.valueOf(vidurl).toLowerCase()).contains(".hdv") || (String.valueOf(vidurl).toLowerCase()).contains(".mpg")) {
                 imageView.setVisibility(View.GONE);
                 videoView.setVisibility(View.VISIBLE);
                 System.out.println(("display video path=" + String.valueOf(vidurl)));
-            videoView.setVideoURI(vidurl);
-            videoView.start();}
+                videoView.setVideoURI(vidurl);
+                videoView.start();
+            }
 
             System.out.println(("complete if loop" + count));
         } else {
@@ -236,7 +237,7 @@ try {
             if (arr_temp.size() > count) {
                 Uri uri = arr_temp.get(count);
                 Uri vidurl = Uri.parse(String.valueOf(uri));
-                if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg")||(String.valueOf(vidurl).toLowerCase()).contains(".jpeg")||(String.valueOf(vidurl).toLowerCase()).contains(".png")) {
+                if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg") || (String.valueOf(vidurl).toLowerCase()).contains(".jpeg") || (String.valueOf(vidurl).toLowerCase()).contains(".png")) {
                     videoView.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
 
@@ -253,19 +254,20 @@ try {
                                 count++;
                                 videoPlay();
                             }
-                        },3000);
+                        }, 3000);
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                }else if((String.valueOf(vidurl).toLowerCase()).contains(".mp4")||(String.valueOf(vidurl).toLowerCase()).contains(".3gp")||(String.valueOf(vidurl).toLowerCase()).contains(".avi")
-                        ||(String.valueOf(vidurl).toLowerCase()).contains(".webm")||(String.valueOf(vidurl).toLowerCase()).contains(".hdv")||(String.valueOf(vidurl).toLowerCase()).contains(".mpg")||(String.valueOf(vidurl).toLowerCase()).contains(".mov")){
+                } else if ((String.valueOf(vidurl).toLowerCase()).contains(".mp4") || (String.valueOf(vidurl).toLowerCase()).contains(".3gp") || (String.valueOf(vidurl).toLowerCase()).contains(".avi")
+                        || (String.valueOf(vidurl).toLowerCase()).contains(".webm") || (String.valueOf(vidurl).toLowerCase()).contains(".hdv") || (String.valueOf(vidurl).toLowerCase()).contains(".mpg") || (String.valueOf(vidurl).toLowerCase()).contains(".mov")) {
                     imageView.setVisibility(View.GONE);
                     videoView.setVisibility(View.VISIBLE);
                     System.out.println(("display video path=" + String.valueOf(vidurl)));
                     videoView.setVideoURI(vidurl);
-                    videoView.start();}
+                    videoView.start();
+                }
 //                videoView.setVideoURI(vidurl);
 //                videoView.start();
             }
@@ -382,9 +384,10 @@ try {
 
         private ProgressDialog pDialog;
         String jsonStr = "";
-//decvice id
-      //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
-        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address="+Secure.getString(getApplicationContext().getContentResolver(),Secure.ANDROID_ID);
+        //decvice id
+        //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
+        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address=12345";
+        // + Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
 
         @Override
         protected void onPreExecute() {
@@ -431,7 +434,7 @@ try {
 
     public void convertJsonData_clientmandate(String jsonStr) {
         arr_video.clear();
-
+        ArrayList arrayList=new ArrayList();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObject = new JSONArray(jsonStr);
@@ -443,31 +446,69 @@ try {
                         //if (!id.contains("jpg")) {
                         arr_video.add("http://" + id);
                         // }
+
                     }
                     System.out.println("json total file count(arry)=" + arr_video);
                     if (arr_video.size() > 0) {
 
-                      // arr_temp.clear();
+                        // arr_temp.clear();
                         for (int i = 0; i < arr_video.size(); i++) {
                             file_url = arr_video.get(i);
                             if (!file_url.equals("")) {
 
                                 String[] temdata = file_url.split("/");
                                 System.out.println("arry name **==" + arr_name);
-                           if (!arr_name.contains(temdata[temdata.length - 1])){
-                                new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
-                                arr_name.add(temdata[temdata.length - 1]);
-                                System.out.println("loop for file downloading ==" + i);}
-                            else{
-                                System.out.println("*************no new video found**********");
+                                if (!arr_name.contains(temdata[temdata.length - 1])) {
+                                    new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
+                                    arr_name.add(temdata[temdata.length - 1]);
+                                    System.out.println("loop for file downloading ==" + i);
+                                } else {
+                                    arrayList.clear();
+                                        for (int g=0;g<arr_video.size();g++){
+
+                                            String p = arr_video.get(g);
+                                            if (!p.equals("")) {
+
+                                                String[] te = p.split("/");
+                                                File pdfFile = new File(Environment.getExternalStorageDirectory() + "/addFront/" + (te[temdata.length - 1]));  // -> filename = maven.pdf
+                                                //Uri path = Uri.fromFile(pdfFile);
+                                                Uri path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
+                                                arrayList.add(path);
+
+                                            }
+
+                                        }
+
+                                    System.out.println("****arry list vertual name"+arrayList);
+                                    arr_temp.retainAll(arrayList);
+                                    System.out.println("*************after retail ellement*********"+arr_temp);
+                                    System.out.println("*************no new video found**********");
+                                }
                             }
+
+                       /*     try{
+                                String[] temdata = file_url.split("/");
+                                if (!arr_temp.contains(temdata[temdata.length - 1])){
+                                    for (int k=0 ;k<arr_temp.size();k++){
+                                        String g= (arr_temp.get(k).toString());
+                                        String[] t = g.split("/");
+                                        String f= t[t.length - 1];
+                                        if (f.equals(temdata)){
+                                            arr_temp.remove(k);
+                                        }
+                                    }
+
+                                }}catch (Exception e){
+                                System.out.println("old file checking eror" + e);
+                            }*/
+
+                            System.out.println("file names array==" + arr_name);
                         }
-                        System.out.println("file names array==" + arr_name);
+                    } else {
+                        Toast.makeText(Activity_Video.this, "No Video Found", Toast.LENGTH_SHORT).show();
                     }
-                }else{
-                    Toast.makeText(Activity_Video.this, "No Video Found", Toast.LENGTH_SHORT).show();
                 }
-            }} catch (final JSONException e) {
+            } catch (final JSONException e) {
 
                 System.out.println("Json parsing error: " + e.getMessage());
                 Toast.makeText(Activity_Video.this, "No Internet Connection ", Toast.LENGTH_SHORT).show();
@@ -485,14 +526,14 @@ try {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            try {
+     /*       try {
                 pDialog = new ProgressDialog(Activity_Video.this);
                 pDialog.setMessage("Please wait...");
                 pDialog.setProgressStyle(R.style.AppCompatAlertDialogStyle);
                 pDialog.setCancelable(false);
                 pDialog.show();
             } catch (Exception e) {
-            }
+            }*/
         }
 
         @Override
@@ -536,6 +577,7 @@ try {
                 File pdfFile = new File(Environment.getExternalStorageDirectory() + "/addFront/" + fileName);  // -> filename = maven.pdf
                 //Uri path = Uri.fromFile(pdfFile);
                 Uri path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
+
                 arr_temp.add(path);
                 System.out.println("loop of files add in directory==" + String.valueOf(arr_temp));
                 newcount++;
@@ -544,16 +586,65 @@ try {
                     videoPlay();
                 }
 
+
+
+
+               /*     if (arr_video.size()>=arr_temp.size()){
+
+
+
+                        }*/
+
+
+
+
+
+
+
+
+         /*       for (int l = 0; l < arr_video.size(); l++) {
+
+                    String d = arr_video.get(l);
+                    String[] s = d.split("/");
+                    for (int g = 0; g < arr_temp.size(); g++) {
+                        String q = String.valueOf(arr_temp.get(l));
+                        if (q.equals(s)){
+
+
+
+                        }else{
+
+                        }
+                    }
+
+                }*/
+
+          /*      try{
+                    String[] temdata = file_url.split("/");
+                    if (!arr_temp.contains(temdata[temdata.length - 1])){
+                        for (int k=0 ;k<arr_temp.size();k++){
+                            String g= (arr_temp.get(k).toString());
+                            String[] t = g.split("/");
+                            String f= t[t.length - 1];
+                            if (f.equals(temdata)){
+                                arr_temp.remove(k);
+                            }
+                        }
+
+                    }}catch (Exception e){
+                    System.out.println("old file checking eror" + e);
+                }*/
+
             } else {
                 if (ErrorTag.contains("FileNotFoundException")) {
                     Toast.makeText(Activity_Video.this, "File Not Found", Toast.LENGTH_LONG).show();
                 }
             }
             //super.onPostExecute(result);
-            try {
+         /*   try {
                 pDialog.dismiss();
             } catch (Exception e) {
-            }
+            }*/
         }
     }
 }
