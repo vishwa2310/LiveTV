@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -41,17 +42,27 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
 public class Activity_Video extends AppCompatActivity {
-    private int resquestPermissionCode = 1;
-    private VideoView videoView;
-    private Context context;
     ArrayList<String> arr_video = new ArrayList<String>();
     ArrayList<String> arr_name = new ArrayList<String>();
     ArrayList<Uri> arr_tempname = new ArrayList<Uri>();
-    private String file_url = "";
     ArrayList<Uri> arr_temp = new ArrayList<Uri>();
     int count = 0, newcount = 0;
+    private int resquestPermissionCode = 1;
+    private VideoView videoView;
+    private Context context;
+    private String file_url = "";
     private NetworkConnection networkConnection;
     private ImageView imageView;
+    private Button btn_net, btn_hw;
+
+    public static boolean isNetworkAvailable(Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        if (connectivityManager != null) {
+            return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+        } else {
+            return false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +77,9 @@ public class Activity_Video extends AppCompatActivity {
         arr_temp.clear();
         videoView = findViewById(R.id.videoView);
         imageView = findViewById(R.id.imageView);
+        btn_net = findViewById(R.id.text_net);
+        btn_hw = findViewById(R.id.text_hard);
+
         try {
             String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
             // System.out.println("Files Path==:" + path);
@@ -124,7 +138,7 @@ public class Activity_Video extends AppCompatActivity {
         }
     }
 }, TimeUnit.MINUTES.toMillis(2));*/
-
+           // chkeSignal();
 
             Timer timer = new Timer();
             TimerTask hourlyTask = new TimerTask() {
@@ -134,6 +148,10 @@ public class Activity_Video extends AppCompatActivity {
                     if (isNetworkAvailable(Activity_Video.this)) {
 
                         new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                        btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                    }else{
+                        btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
                     }
                 }
             };
@@ -152,6 +170,24 @@ public class Activity_Video extends AppCompatActivity {
         timer.schedule (hourlyTask, 0l, TimeUnit.MINUTES.toMillis(5));   // 1000*10*60 every 10 minut*/
         } catch (Exception e) {
         }
+    }
+
+    private void chkeSignal() {
+
+        System.out.println("run indicatore");
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isNetworkAvailable(Activity_Video.this)) {
+                    btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                    btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                } else {
+                    btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
+                    // btn_hw.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                }
+            }
+        }, 3000);
+
     }
 
     @Override
@@ -182,7 +218,6 @@ public class Activity_Video extends AppCompatActivity {
     private void requestPermission() {
         ActivityCompat.requestPermissions(Activity_Video.this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, resquestPermissionCode);
     }
-
 
     private boolean checkPermission() {
         int permission_write = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
@@ -278,15 +313,6 @@ public class Activity_Video extends AppCompatActivity {
         // videoPlay();
     }
 
-    public static boolean isNetworkAvailable(Context context) {
-        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-        if (connectivityManager != null) {
-            return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
-        } else {
-            return false;
-        }
-    }
-
    /* private class GetdeviceID extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog pDialog;
@@ -379,14 +405,98 @@ public class Activity_Video extends AppCompatActivity {
         }
     }*/
 
+    public void convertJsonData_clientmandate(String jsonStr) {
+        arr_video.clear();
+        ArrayList arrayList = new ArrayList();
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonObject = new JSONArray(jsonStr);
+                if (!jsonObject.toString().equals("[]")) {
+                    for (int i = 0; i < jsonObject.length(); i++) {
+
+                        JSONObject e = jsonObject.getJSONObject(i);
+                        String id = e.getString("video");
+                        //if (!id.contains("jpg")) {
+                        arr_video.add("http://" + id);
+                        // }
+
+                    }
+                    System.out.println("json total file count(arry)=" + arr_video);
+                    if (arr_video.size() > 0) {
+
+                        // arr_temp.clear();
+                        for (int i = 0; i < arr_video.size(); i++) {
+                            file_url = arr_video.get(i);
+                            if (!file_url.equals("")) {
+
+                                String[] temdata = file_url.split("/");
+                                System.out.println("arry name **==" + arr_name);
+                                if (!arr_name.contains(temdata[temdata.length - 1])) {
+                                    new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
+                                    arr_name.add(temdata[temdata.length - 1]);
+                                    System.out.println("loop for file downloading ==" + i);
+                                } else {
+                                    arrayList.clear();
+                                    for (int g = 0; g < arr_video.size(); g++) {
+
+                                        String p = arr_video.get(g);
+                                        if (!p.equals("")) {
+
+                                            String[] te = p.split("/");
+                                            File pdfFile = new File(Environment.getExternalStorageDirectory() + "/addFront/" + (te[temdata.length - 1]));  // -> filename = maven.pdf
+                                            //Uri path = Uri.fromFile(pdfFile);
+                                            Uri path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
+                                            arrayList.add(path);
+
+                                        }
+
+                                    }
+
+                                    System.out.println("****arry list vertual name" + arrayList);
+                                    arr_temp.retainAll(arrayList);
+                                    System.out.println("*************after retail ellement*********" + arr_temp);
+                                    System.out.println("*************no new video found**********");
+                                }
+                            }
+
+                       /*     try{
+                                String[] temdata = file_url.split("/");
+                                if (!arr_temp.contains(temdata[temdata.length - 1])){
+                                    for (int k=0 ;k<arr_temp.size();k++){
+                                        String g= (arr_temp.get(k).toString());
+                                        String[] t = g.split("/");
+                                        String f= t[t.length - 1];
+                                        if (f.equals(temdata)){
+                                            arr_temp.remove(k);
+                                        }
+                                    }
+
+                                }}catch (Exception e){
+                                System.out.println("old file checking eror" + e);
+                            }*/
+
+                            System.out.println("file names array==" + arr_name);
+                        }
+                    } else {
+                        Toast.makeText(Activity_Video.this, "No Video Found", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } catch (final JSONException e) {
+
+                System.out.println("Json parsing error: " + e.getMessage());
+                Toast.makeText(Activity_Video.this, "No Internet Connection ", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+    }
 
     private class GetVidoList extends AsyncTask<Void, Void, Void> {
 
-        private ProgressDialog pDialog;
         String jsonStr = "";
         //decvice id
         //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
         String url_getclientmandate = "http://adfront.in/video_api.php?mac_address=12345";
+        private ProgressDialog pDialog;
         // + Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
 
         @Override
@@ -430,91 +540,6 @@ public class Activity_Video extends AppCompatActivity {
             }
         }
 
-    }
-
-    public void convertJsonData_clientmandate(String jsonStr) {
-        arr_video.clear();
-        ArrayList arrayList=new ArrayList();
-        if (jsonStr != null) {
-            try {
-                JSONArray jsonObject = new JSONArray(jsonStr);
-                if (!jsonObject.toString().equals("[]")) {
-                    for (int i = 0; i < jsonObject.length(); i++) {
-
-                        JSONObject e = jsonObject.getJSONObject(i);
-                        String id = e.getString("video");
-                        //if (!id.contains("jpg")) {
-                        arr_video.add("http://" + id);
-                        // }
-
-                    }
-                    System.out.println("json total file count(arry)=" + arr_video);
-                    if (arr_video.size() > 0) {
-
-                        // arr_temp.clear();
-                        for (int i = 0; i < arr_video.size(); i++) {
-                            file_url = arr_video.get(i);
-                            if (!file_url.equals("")) {
-
-                                String[] temdata = file_url.split("/");
-                                System.out.println("arry name **==" + arr_name);
-                                if (!arr_name.contains(temdata[temdata.length - 1])) {
-                                    new DownloadFile().execute(file_url, temdata[temdata.length - 1]);
-                                    arr_name.add(temdata[temdata.length - 1]);
-                                    System.out.println("loop for file downloading ==" + i);
-                                } else {
-                                    arrayList.clear();
-                                        for (int g=0;g<arr_video.size();g++){
-
-                                            String p = arr_video.get(g);
-                                            if (!p.equals("")) {
-
-                                                String[] te = p.split("/");
-                                                File pdfFile = new File(Environment.getExternalStorageDirectory() + "/addFront/" + (te[temdata.length - 1]));  // -> filename = maven.pdf
-                                                //Uri path = Uri.fromFile(pdfFile);
-                                                Uri path = FileProvider.getUriForFile(Activity_Video.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
-                                                arrayList.add(path);
-
-                                            }
-
-                                        }
-
-                                    System.out.println("****arry list vertual name"+arrayList);
-                                    arr_temp.retainAll(arrayList);
-                                    System.out.println("*************after retail ellement*********"+arr_temp);
-                                    System.out.println("*************no new video found**********");
-                                }
-                            }
-
-                       /*     try{
-                                String[] temdata = file_url.split("/");
-                                if (!arr_temp.contains(temdata[temdata.length - 1])){
-                                    for (int k=0 ;k<arr_temp.size();k++){
-                                        String g= (arr_temp.get(k).toString());
-                                        String[] t = g.split("/");
-                                        String f= t[t.length - 1];
-                                        if (f.equals(temdata)){
-                                            arr_temp.remove(k);
-                                        }
-                                    }
-
-                                }}catch (Exception e){
-                                System.out.println("old file checking eror" + e);
-                            }*/
-
-                            System.out.println("file names array==" + arr_name);
-                        }
-                    } else {
-                        Toast.makeText(Activity_Video.this, "No Video Found", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            } catch (final JSONException e) {
-
-                System.out.println("Json parsing error: " + e.getMessage());
-                Toast.makeText(Activity_Video.this, "No Internet Connection ", Toast.LENGTH_SHORT).show();
-
-            }
-        }
     }
 
     private class DownloadFile extends AsyncTask<String, Void, Void> {

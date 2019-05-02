@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +7,22 @@
     android:orientation="vertical"
     tools:context=".Activity_Video">
 
+
+    <Button
+        android:id="@+id/text_net"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:background="@color/colorGren"
+        android:layout_marginLeft="10dp"
+        android:text="I" />
+    <Button
+        android:id="@+id/text_hard"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:background="@color/colorGren"
+        android:layout_marginLeft="5dp"
+        android:text="H"
+      android:layout_toRightOf="@id/text_net" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -18,6 +34,6 @@
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
-</LinearLayout>
+</RelativeLayout >
