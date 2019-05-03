@@ -163,7 +163,7 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
             };
 
 // schedule the task to run starting now and then every hour...
-            timer.schedule(hourlyTask, 0l, 1000 * 2 * 60);   // 1000*10*60 every 10 minut
+            timer.schedule(hourlyTask, 0l, 1000 * 60*1);   // 1000*10*60 every 10 minut
 
    /*     Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
