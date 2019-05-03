@@ -1,13 +1,16 @@
 package com.livetv;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,7 +34,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,7 +58,7 @@ public class Activity_Video extends AppCompatActivity {
     private String file_url = "";
     private NetworkConnection networkConnection;
     private ImageView imageView;
-    private Button btn_net, btn_hw;
+    private Button btn_net, btn_hw,btn_dwnload;
 
     public static boolean isNetworkAvailable(Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
@@ -79,6 +84,7 @@ public class Activity_Video extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         btn_net = findViewById(R.id.text_net);
         btn_hw = findViewById(R.id.text_hard);
+        btn_dwnload = findViewById(R.id.text_dwnload);
 
         try {
             String path = Environment.getExternalStorageDirectory().toString() + "/addFront";
@@ -146,18 +152,18 @@ public class Activity_Video extends AppCompatActivity {
                 public void run() {
                     System.out.println("run timer");
                     if (isNetworkAvailable(Activity_Video.this)) {
-
+System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(new Date()));
                         new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
-                        btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                       // btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                       // btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
                     }else{
-                        btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
+                       // btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
                     }
                 }
             };
 
 // schedule the task to run starting now and then every hour...
-            timer.schedule(hourlyTask, 0l, 1000 * 4 * 60);   // 1000*10*60 every 10 minut
+            timer.schedule(hourlyTask, 0l, 1000 * 2 * 60);   // 1000*10*60 every 10 minut
 
    /*     Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
@@ -189,16 +195,42 @@ public class Activity_Video extends AppCompatActivity {
         }, 3000);
 
     }
+    public static boolean isConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+    public BroadcastReceiver service_Broadcaset=new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction()!=null){
+                if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+
+                    if (isConnected(context)){
+                       // Toast.makeText(context,"Network  avilable won method", Toast.LENGTH_LONG).show();;
+                        btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
+
+                    }else{
+                        btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
+                        //Toast.makeText(context,"Network Not avilable won method", Toast.LENGTH_LONG).show();;
+                    }
+                }
+            }
+
+        }
+    };
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(networkConnection, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        registerReceiver(service_Broadcaset, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(networkConnection);
+        unregisterReceiver(service_Broadcaset);
         super.onPause();
     }
 
@@ -482,7 +514,7 @@ public class Activity_Video extends AppCompatActivity {
                     }
                 }
             } catch (final JSONException e) {
-
+                btn_hw.setBackgroundColor(getResources().getColor(R.color.colorRed));
                 System.out.println("Json parsing error: " + e.getMessage());
                 Toast.makeText(Activity_Video.this, "No Internet Connection ", Toast.LENGTH_SHORT).show();
 
@@ -551,6 +583,7 @@ public class Activity_Video extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            btn_dwnload.setBackgroundColor(getResources().getColor(R.color.colorRed));
      /*       try {
                 pDialog = new ProgressDialog(Activity_Video.this);
                 pDialog.setMessage("Please wait...");
@@ -665,6 +698,7 @@ public class Activity_Video extends AppCompatActivity {
                     Toast.makeText(Activity_Video.this, "File Not Found", Toast.LENGTH_LONG).show();
                 }
             }
+            btn_dwnload.setBackgroundColor(getResources().getColor(R.color.colorGren));
             //super.onPostExecute(result);
          /*   try {
                 pDialog.dismiss();

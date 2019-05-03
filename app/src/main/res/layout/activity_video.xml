@@ -10,19 +10,28 @@
 
     <Button
         android:id="@+id/text_net"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:background="@color/colorGren"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
         android:layout_marginLeft="10dp"
-        android:text="I" />
+        android:layout_marginTop="5dp"
+        android:background="@color/colorGren" />
+
+    <Button
+        android:id="@+id/text_dwnload"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/text_net"
+        android:background="@color/colorGren" />
     <Button
         android:id="@+id/text_hard"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:background="@color/colorGren"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
         android:layout_marginLeft="5dp"
-        android:text="H"
-      android:layout_toRightOf="@id/text_net" />
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/text_dwnload"
+        android:background="@color/colorGren" />
 
     <ImageView
         android:id="@+id/imageView"
