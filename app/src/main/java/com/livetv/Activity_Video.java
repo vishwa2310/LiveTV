@@ -175,6 +175,7 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
 // schedule the task to run starting now and then every 15minutes...
         timer.schedule (hourlyTask, 0l, TimeUnit.MINUTES.toMillis(5));   // 1000*10*60 every 10 minut*/
         } catch (Exception e) {
+            System.out.println("Error in =="+e);
         }
     }
 

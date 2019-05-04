@@ -31,4 +31,6 @@ public class NetworkConnection extends BroadcastReceiver {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
+
+
 }

@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -39,12 +40,14 @@
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Design.NoActionBar" />
 
-        <receiver android:name="com.livetv.Myboot" android:enabled="true" android:exported="true">
+        <receiver android:name="com.livetv.Myboot"
+            android:enabled="true" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>
