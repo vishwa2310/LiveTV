@@ -22,6 +22,7 @@ public class NetworkConnection extends BroadcastReceiver {
                 Toast.makeText(context,"Network Not avilable", Toast.LENGTH_SHORT).show();;
             }
         }
+
         }
     }
 
@@ -31,6 +32,4 @@ public class NetworkConnection extends BroadcastReceiver {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
-
-
 }

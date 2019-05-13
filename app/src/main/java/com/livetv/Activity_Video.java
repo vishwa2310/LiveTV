@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import android.provider.Settings.Secure;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -55,10 +56,10 @@ public class Activity_Video extends AppCompatActivity {
     private int resquestPermissionCode = 1;
     private VideoView videoView;
     private Context context;
-    private String file_url = "";
+    private String file_url = "", netStus = "";
     private NetworkConnection networkConnection;
     private ImageView imageView;
-    private Button btn_net, btn_hw,btn_dwnload;
+    private Button btn_net, btn_hw, btn_dwnload;
 
     public static boolean isNetworkAvailable(Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
@@ -144,7 +145,7 @@ public class Activity_Video extends AppCompatActivity {
         }
     }
 }, TimeUnit.MINUTES.toMillis(2));*/
-           // chkeSignal();
+            // chkeSignal();
 
             Timer timer = new Timer();
             TimerTask hourlyTask = new TimerTask() {
@@ -152,18 +153,22 @@ public class Activity_Video extends AppCompatActivity {
                 public void run() {
                     System.out.println("run timer");
                     if (isNetworkAvailable(Activity_Video.this)) {
-System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(new Date()));
+                        netStus = "Y";
+                        System.out.println("time current===" + DateFormat.getDateTimeInstance().format(new Date()));
                         new GetVidoList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                       // btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
-                       // btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
-                    }else{
-                       // btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
+                        new GetNetStatusUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        // btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                        // btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
+                    } else {
+                        netStus = "N";
+                        new GetNetStatusUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        // btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
                     }
                 }
             };
 
 // schedule the task to run starting now and then every hour...
-            timer.schedule(hourlyTask, 0l, 1000 * 60*1);   // 1000*10*60 every 10 minut
+            timer.schedule(hourlyTask, 0l, 1000 * 60 * 1);   // 1000*10*60 every 10 minut
 
    /*     Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
@@ -175,7 +180,7 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
 // schedule the task to run starting now and then every 15minutes...
         timer.schedule (hourlyTask, 0l, TimeUnit.MINUTES.toMillis(5));   // 1000*10*60 every 10 minut*/
         } catch (Exception e) {
-            System.out.println("Error in =="+e);
+            System.out.println("Error in ==" + e);
         }
     }
 
@@ -196,24 +201,26 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
         }, 3000);
 
     }
+
     public static boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
-    public BroadcastReceiver service_Broadcaset=new BroadcastReceiver() {
+
+    public BroadcastReceiver service_Broadcaset = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (intent.getAction()!=null){
+            if (intent.getAction() != null) {
                 if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 
-                    if (isConnected(context)){
-                       // Toast.makeText(context,"Network  avilable won method", Toast.LENGTH_LONG).show();;
+                    if (isConnected(context)) {
+                        // Toast.makeText(context,"Network  avilable won method", Toast.LENGTH_LONG).show();;
                         btn_net.setBackgroundColor(getResources().getColor(R.color.colorGren));
 
-                    }else{
+                    } else {
                         btn_net.setBackgroundColor(getResources().getColor(R.color.colorRed));
                         //Toast.makeText(context,"Network Not avilable won method", Toast.LENGTH_LONG).show();;
                     }
@@ -262,8 +269,9 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
     }
 
     private void videoPlay() {
-
+        System.out.println(("***count in method start*****=" + count));
         if (arr_temp.size() > count) {
+            System.out.println(("checking if loop arraysize="+arr_temp.size()+ "and count=" + count+"***array temp==***=="+arr_temp));
             Uri uri = arr_temp.get(count);
             final Uri vidurl = Uri.parse(String.valueOf(uri));
             if ((String.valueOf(vidurl).toLowerCase()).contains(".jpg") || (String.valueOf(vidurl).toLowerCase()).contains(".jpeg") || (String.valueOf(vidurl).toLowerCase()).contains(".png")) {
@@ -277,10 +285,14 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     imageView.setImageBitmap(selectedImage);
                     System.out.println(("display image path=" + String.valueOf(vidurl)));
+                    System.out.println(("count under thred 1st ="+ count));
+                    count++;
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            count++;
+
+
+                            System.out.println(("if thread run***="+ count));
                             videoPlay();
                         }
                     }, 3000);
@@ -295,6 +307,7 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
                 videoView.setVisibility(View.VISIBLE);
                 System.out.println(("display video path=" + String.valueOf(vidurl)));
                 videoView.setVideoURI(vidurl);
+                count++;
                 videoView.start();
             }
 
@@ -316,10 +329,11 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
                         final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                         imageView.setImageBitmap(selectedImage);
                         System.out.println(("display image path=" + String.valueOf(vidurl)));
+                        count++;
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                count++;
+
                                 videoPlay();
                             }
                         }, 3000);
@@ -334,15 +348,17 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
                     videoView.setVisibility(View.VISIBLE);
                     System.out.println(("display video path=" + String.valueOf(vidurl)));
                     videoView.setVideoURI(vidurl);
+                    count++;
                     videoView.start();
+
                 }
 //                videoView.setVideoURI(vidurl);
 //                videoView.start();
             }
-
+            System.out.println(("complete else loop" + count));
         }
-        count++;
-        System.out.println(("end of loop"));
+
+        System.out.println(("end of loop=="+count));
         // videoPlay();
     }
 
@@ -484,11 +500,12 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
                                         }
 
                                     }
-
+                                    System.out.println("****temp arry " + arr_temp);
                                     System.out.println("****arry list vertual name" + arrayList);
                                     arr_temp.retainAll(arrayList);
-                                    System.out.println("*************after retail ellement*********" + arr_temp);
+                                    System.out.println("*************after retail ellement*********" + arr_temp+"count of array temp="+arr_temp.size());
                                     System.out.println("*************no new video found**********");
+                                    btn_hw.setBackgroundColor(getResources().getColor(R.color.colorGren));
                                 }
                             }
 
@@ -528,7 +545,7 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
         String jsonStr = "";
         //decvice id
         //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
-        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address=12345";
+        String url_getclientmandate = "http://adfront.in/video_api.php?mac_address="+ Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         private ProgressDialog pDialog;
         // + Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
 
@@ -706,5 +723,48 @@ System.out.println("time current==="+ DateFormat.getDateTimeInstance().format(ne
             } catch (Exception e) {
             }*/
         }
+    }
+
+
+    private class GetNetStatusUpdate extends AsyncTask<Void, Void, Void> {
+
+        String jsonStr = "";
+        //decvice id
+        //  Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)
+        String url_getclientmandate = "http://adfront.in/statuss_update.php?device_id=" + 12345 + "&status=" + netStus;
+        private ProgressDialog pDialog;
+        // + Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            System.out.println("This is Url====" + url_getclientmandate);
+            HttpHandler sh = new HttpHandler();
+            // Making a request to url and getting response
+            jsonStr = sh.makeServiceCall(url_getclientmandate).toLowerCase();
+            System.out.println("This responce ====" + jsonStr);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            if (jsonStr.equals("vishwa")) {
+                Toast.makeText(Activity_Video.this, "please Check Internet Connection", Toast.LENGTH_SHORT).show();
+
+            } else {
+
+            }
+
+        }
+
     }
 }
